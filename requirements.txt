@@ -1,0 +1,9 @@
+langchain>=0.1.13
+langchain-community>=0.0.29
+chromadb>=0.4.24
+streamlit>=1.32.2
+streamlit-chat==0.1.1
+unstructured>=0.12.6
+fastembed>=0.2.5
+validators==0.23.2
+pypdf==4.1.0

@@ -1,0 +1,23 @@
+services:
+  python-dev:
+    image: python:3.9
+    volumes:
+      - .:/code
+    command:
+      pip install -r /code/requirements.txt && streamlit run /code/src/main.py
+  ollama:
+    image: ollama/ollama:0.1.9
+    volumes:
+      - ./ollama:/root/.ollama
+  chromadb:
+    image: ghcr.io/chroma-core/chroma:latest
+    environment:
+      - IS_PERSISTENT=TRUE
+    ports:
+      - 8000:8000
+    volumes:
+      # Default configuration for persist_directory in chromadb/config.py
+      # Currently it's located in "/chroma/chroma/"
+      - chroma-data:/chroma/chroma/
+volumes:
+  chroma-data:

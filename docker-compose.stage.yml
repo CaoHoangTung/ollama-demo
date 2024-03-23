@@ -1,0 +1,29 @@
+services:
+  rag_app:
+    image: rag_app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - rag_app_data:/app/.data
+    environment:
+      OLLAMA_URL: http://localhost:11434
+      CHROMA_HOST: localhost
+      CHROMA_PORT: 8000
+      MODEL_NAME: gemma
+    network_mode: host
+
+  chromadb:
+    image: ghcr.io/chroma-core/chroma:latest
+    environment:
+      - IS_PERSISTENT=TRUE
+    ports:
+      - 8000:8000
+    volumes:
+      # Default configuration for persist_directory in chromadb/config.py
+      # Currently it's located in "/chroma/chroma/"
+      - chroma-data:/chroma/chroma/
+volumes:
+  chroma-data:
+  rag_app_data:
+  ollama_data:
