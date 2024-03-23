@@ -10,7 +10,7 @@ services:
       OLLAMA_URL: http://localhost:11434
       CHROMA_HOST: localhost
       CHROMA_PORT: 8000
-      MODEL_NAME: gemma
+      MODEL_NAME: "mistral:instruct"
     network_mode: host
 
   chromadb:

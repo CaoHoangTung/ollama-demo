@@ -8,7 +8,7 @@ index_docs:
 	python src/index_document.py
 
 main:
-	streamlit run src/main.py
+	streamlit run src/main.py --server.port 8080
 
 staging_build:
 	docker compose -f docker-compose.stage.yml build

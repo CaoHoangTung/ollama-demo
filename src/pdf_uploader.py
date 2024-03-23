@@ -14,7 +14,7 @@ from chat import get_vector_store
 class PDFIndexer:
 
     def __init__(self):
-        self.text_splitter = RecursiveCharacterTextSplitter(chunk_size=1024, chunk_overlap=100)
+        self.text_splitter = RecursiveCharacterTextSplitter(chunk_size=128, chunk_overlap=50)
         self.vector_store = get_vector_store()
         self.upload_folder = ".data/uploads"
         os.makedirs(self.upload_folder, exist_ok=True)

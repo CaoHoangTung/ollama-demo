@@ -1,4 +1,6 @@
 import os
+from typing import Dict, Any, List, Optional
+from uuid import UUID
 
 import chromadb
 from langchain.schema.output_parser import StrOutputParser
@@ -6,6 +8,8 @@ from langchain.schema.runnable import RunnablePassthrough
 from langchain_community.chat_models.ollama import ChatOllama
 from langchain_community.embeddings.fastembed import FastEmbedEmbeddings
 from langchain_community.vectorstores.chroma import Chroma
+from langchain_core.callbacks import BaseCallbackHandler
+from langchain_core.messages import BaseMessage
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
@@ -19,6 +23,15 @@ OLLAMA_URL = os.environ["OLLAMA_URL"] if "OLLAMA_URL" in os.environ else "http:/
 MODEL_NAME = os.environ["MODEL_NAME"] if "MODEL_NAME" in os.environ else "mistral:instruct"
 
 
+class MyCustomHandler(BaseCallbackHandler):
+    def on_chat_model_start(
+            self,
+            serialized: Dict[str, Any],
+            messages: List[List[BaseMessage]], **kwargs
+    ) -> Any:
+        print("passing messages to chat model", messages)
+
+
 def get_vector_store():
     chroma_client = chromadb.HttpClient(host=CHROMA_HOST, port=CHROMA_PORT)
     return Chroma(client=chroma_client, embedding_function=FastEmbedEmbeddings())
@@ -30,7 +43,7 @@ class ChatPDF:
     chain = None
 
     def __init__(self):
-        self.model = ChatOllama(model=MODEL_NAME, base_url=OLLAMA_URL)
+        self.model = ChatOllama(model=MODEL_NAME, base_url=OLLAMA_URL, callbacks=[MyCustomHandler()])
         self.embedding = FastEmbedEmbeddings()
         self.text_splitter = RecursiveCharacterTextSplitter(chunk_size=1024, chunk_overlap=100)
         self.prompt = ChatPromptTemplate.from_template(
@@ -62,7 +75,6 @@ class ChatPDF:
         )
 
     def ask(self, query: str):
-        # return f"{self.vector_store.search(query, search_type='similarity')}"
         return self.chain.invoke(query)
 
     def clear(self):
