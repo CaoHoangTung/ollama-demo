@@ -2,7 +2,7 @@ import streamlit as st
 import validators
 from streamlit_chat import message
 
-from chat import ChatPDF
+from chat_agent import ChatPDF
 from pdf_uploader import PDFIndexer
 
 st.set_page_config(page_title="ChatPDF")

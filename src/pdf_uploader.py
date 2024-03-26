@@ -8,7 +8,7 @@ from langchain_community.document_loaders.pdf import PyPDFLoader
 from langchain_community.vectorstores.utils import filter_complex_metadata
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-from chat import get_vector_store
+from chat_agent import get_vector_store
 
 
 class PDFIndexer:

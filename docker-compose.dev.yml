@@ -4,7 +4,7 @@ services:
     volumes:
       - .:/code
     command:
-      pip install -r /code/requirements.txt && streamlit run /code/src/main.py
+      pip install -r /code/requirements.txt && streamlit run /code/src/chat_ui.py
   ollama:
     image: ollama/ollama:0.1.9
     volumes:
