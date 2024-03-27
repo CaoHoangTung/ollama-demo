@@ -18,4 +18,4 @@ EXPOSE 8501
 
 HEALTHCHECK CMD curl --fail http://localhost:8501/healthz
 
-ENTRYPOINT ["streamlit", "run", "src/main.py", "--server.port=8501", "--server.address=0.0.0.0"]
+ENTRYPOINT ["streamlit", "run", "src/pdf_chat/chat_ui.py", "--server.port=8501", "--server.address=0.0.0.0"]

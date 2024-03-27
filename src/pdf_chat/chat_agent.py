@@ -1,6 +1,5 @@
 import os
-from typing import Dict, Any, List, Optional
-from uuid import UUID
+from typing import Dict, Any, List
 
 import chromadb
 from langchain.schema.output_parser import StrOutputParser
