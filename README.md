@@ -9,5 +9,6 @@
    ```
 2. Run the main script with the pdf file as the input
    ```bash
-   python src/invoice_extract/main.py /path/to/pdf/file
+   python src/invoice_extract/main.py /path/to/pdf/file --model="llama"
    ```
+   Optionally you can provide a different model.

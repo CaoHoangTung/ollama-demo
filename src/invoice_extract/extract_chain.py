@@ -1,22 +1,33 @@
-import base64
 import os
-from io import BytesIO
+from typing import List
 
-import ollama
 from PIL import Image
+from langchain_community.chat_models.ollama import ChatOllama
+from langchain_community.document_loaders.pdf import PyPDFLoader
+from langchain_core.messages import SystemMessage, HumanMessage
+from langchain_core.output_parsers import StrOutputParser
+from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.runnables import RunnablePassthrough
 
 OLLAMA_URL = os.environ["OLLAMA_URL"] if "OLLAMA_URL" in os.environ else "http://localhost:11434"
 
-system_prompt = """You are an agent that will read a list of images from one invoice and extract information from them.
-Return the following info:
-- customer_name: The name of the customer
-- customer_id: The ID of the customer
-- order_total: The total amount of the order
+system_prompt = """<s>[INST]
+You are an excellent document scanner.
+I am attaching the content of a multipage-page PDF order document.
+I want to extract the line-items of the text which carries any of the phrases "Komplettangebot" or "Komplette PV Anlage",
+including the product description and the price as JSON strings.
+
+Also include in the JSON the total order value is, and any tax amounts.
+
+The comma is the decimal separator and the dot is the thousands separator (german numbering).
+
+Extract the name of the customer, the order date and the order number out into JSON as well.
+Remove line-breaks and form continuous sentences.
+
+Extract pre-text and post-texts, from before and after the order lines.
+Here, leave the line-breaks as they are.
+[/INST]</s>
 """
-
-
-def pil_image_to_bytes(image: Image.Image) -> bytes:
-    return image.tobytes("raw", "RGB")
 
 
 class InvoiceExtractChain:
@@ -25,16 +36,20 @@ class InvoiceExtractChain:
     chain = None
 
     def __init__(self, model_name: str):
-        self.model = ollama.Client(host=OLLAMA_URL)
-        self.model_name = model_name
+        self.model = ChatOllama(model=model_name, base_url=OLLAMA_URL)
+        self.prompt = ChatPromptTemplate.from_messages([
+            ("system", system_prompt),
+            ("human", "Invoice content: {file_content}"),
+        ])
 
-    def invoke(self, files: Image):
-        image_byte = [pil_image_to_bytes(file) for file in files]
-        print("Invoking input on Ollama model", self.model_name)
-        return self.model.chat(
-            self.model_name,
-            [
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": "Please parse this invoice", "images": image_byte}
-            ],
+        self.chain = self.chain = (
+                self.prompt
+                | self.model
+                | StrOutputParser()
         )
+
+    def invoke(self, file_path: str):
+        loader = PyPDFLoader(file_path)
+        pages = loader.load_and_split()
+        pages_content = [page.page_content for page in pages]
+        print(self.chain.invoke({"file_content": pages_content}))
