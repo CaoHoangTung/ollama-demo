@@ -13,9 +13,12 @@
 
 - Install poppler
    https://pdf2image.readthedocs.io/en/latest/installation.html
-   
+
 2. Run the main script with the pdf file as the input
    ```bash
    python src/invoice_extract/main.py /path/to/pdf/file --model="llama2"
    ```
    Optionally you can provide a different model.
+
+3. Running in `/pdf`
+You can modify the pdf path in `run.sh` and run the file to get the output for multiple pdfs
