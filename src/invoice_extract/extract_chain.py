@@ -29,7 +29,6 @@ Here, leave the line-breaks as they are.
 [/INST]</s>
 """
 
-
 class InvoiceExtractChain:
     vector_store = None
     retriever = None
@@ -39,7 +38,7 @@ class InvoiceExtractChain:
         self.model = ChatOllama(model=model_name, base_url=OLLAMA_URL)
         self.prompt = ChatPromptTemplate.from_messages([
             ("system", system_prompt),
-            ("human", "Invoice content: {file_content}"),
+            ("human", "Invoice content: {file_content}. Remember to return result in JSON, and do not provide any explanation"),
         ])
 
         self.chain = self.chain = (
